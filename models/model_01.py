@@ -18,9 +18,12 @@ class Model(BaseModel):
         model = tf.keras.applications.VGG16(
             include_top=self.config.model.include_top,
             weights=self.config.model.weights,
-            input_tensor=self.config.input_tensor,
-            input_shape=self.config.input_shape,
-            pooling=self.config.pooling,
-            classes=self.config.classes,
-            classifier_activation=self.config.classifier.activation,
+            input_tensor=self.config.model.input_tensor,
+            # Maximum size given my gpu
+            input_shape=(511, 511, 3),
+            pooling=self.config.model.pooling,
+            classes=self.config.model.classes,
+            classifier_activation=self.config.model.classifier_activation,
         )
+
+        return model
