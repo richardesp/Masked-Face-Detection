@@ -1,0 +1,12 @@
+{
+  "model": {
+    "name": "model_01.h5",
+    "include_top": "True",
+    "weights": "None",
+    "input_tensor": "None",
+    "input_shape": "(1024, 1024, 3)",
+    "pooling": "None",
+    "classes": "2",
+    "classifier_activation": "softmax"
+  }
+}
