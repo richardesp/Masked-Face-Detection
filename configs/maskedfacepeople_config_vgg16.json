@@ -11,7 +11,7 @@
     "include_top": true,
     "weights": null,
     "input_tensor": null,
-    "input_shape": "(1024, 1024, 3)",
+    "input_shape": "(511, 511, 3)",
     "pooling": "max",
     "classes": 2,
     "classifier_activation": "softmax",
@@ -21,7 +21,7 @@
   "trainer": {
     "name": "trainer.ModelTrainer",
     "num_epochs": 3000,
-    "batch_size": 64,
+    "batch_size": 10,
     "verbose_training": false,
     "save_pickle": true
   },
