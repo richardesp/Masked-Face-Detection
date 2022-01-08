@@ -14,17 +14,23 @@ class ModelTrainer(BaseTrain):
         self.load_callbacks()
 
     def load_callbacks(self):
-        self.callbacks.append(
-            ModelCheckpoint(
-                filepath=os.path.join(self.config.callbacks.checkpoint_dir,
-                                      '%s-{epoch:02d}-{val_acc:.4f}.h5' % self.config.exp.name),
-                monitor=self.config.callbacks.checkpoint_monitor,
-                mode=self.config.callbacks.checkpoint_mode,
-                save_best_only=self.config.callbacks.checkpoint_save_best_only,
-                verbose=self.config.callbacks.checkpoint_verbose,
-                save_format="h5",
+        for index in range(len(self.config.callbacks)):
+            self.callbacks.append(
+                ModelCheckpoint(
+                    filepath=os.path.join(self.config.callbacks[index].checkpoint_dir,
+                                          '%s-{epoch:02d}-{val_acc:.4f}.h5' % self.config.exp.name),
+                    monitor=self.config.callbacks[index].checkpoint_monitor,
+                    mode=self.config.callbacks[index].checkpoint_mode,
+                    save_best_only=self.config.callbacks[index].checkpoint_save_best_only,
+                    verbose=self.config.callbacks[index].checkpoint_verbose,
+                    save_format="h5",
+                )
             )
-        )
+
+            print(f"Callback {index + 1}: {self.config.callbacks[index].checkpoint_monitor}, "
+                  f"{self.config.callbacks[index].checkpoint_mode}, "
+                  f"{self.config.callbacks[index].checkpoint_save_best_only}, "
+                  f"{self.config.callbacks[index].checkpoint_verbose}")
 
     def get_callbacks(self) -> list:
         return self.callbacks
