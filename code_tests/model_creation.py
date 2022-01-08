@@ -6,8 +6,7 @@ from utils import get_model_size
 
 
 class MyTestCase(unittest.TestCase):
-    @staticmethod
-    def test_creation_model():
+    def test_creation_model(self):
         config_file = config.process_config("../configs/maskedfacepeople_config_vgg16.json")
         class_model = model_01.Model(config_file)
         model = class_model.build_model()
