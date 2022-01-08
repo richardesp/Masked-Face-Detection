@@ -15,10 +15,10 @@ class BaseTrain(object):
     :param config: config file where to load all params for train the model
     """
 
-    def __init__(self, model, data_train, data_test, config):
+    def __init__(self, model, training_data, validation_data, config):
         self.model = model
-        self.train_data = data_train
-        self.test_data = data_test
+        self.training_data = training_data
+        self.validation_data = validation_data
         self.config = config
 
     def train(self):
