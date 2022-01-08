@@ -7,7 +7,7 @@
     "name": "data_loader_01.DataLoader"
   },
   "model": {
-    "name": "model_01.h5",
+    "name": "model_01",
     "include_top": true,
     "weights": null,
     "input_tensor": null,
