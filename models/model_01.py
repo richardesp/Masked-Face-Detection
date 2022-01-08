@@ -20,7 +20,7 @@ class Model(BaseModel):
             weights=self.config.model.weights,
             input_tensor=self.config.model.input_tensor,
             # Maximum size given my gpu
-            input_shape=(511, 511, 3),
+            input_shape=tuple(map(int, self.config.model.input_shape.split(', '))),
             pooling=self.config.model.pooling,
             classes=self.config.model.classes,
             classifier_activation=self.config.model.classifier_activation,

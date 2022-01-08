@@ -11,7 +11,7 @@
     "include_top": true,
     "weights": null,
     "input_tensor": null,
-    "input_shape": "(511, 511, 3)",
+    "input_shape": "256, 256, 3",
     "pooling": "max",
     "classes": 2,
     "classifier_activation": "softmax",
