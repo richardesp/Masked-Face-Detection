@@ -25,3 +25,6 @@ class BaseTrain(object):
         Abstract method for train a specified model
         """
         raise NotImplementedError
+
+    def get_callbacks(self) -> list:
+        return self.callbacks

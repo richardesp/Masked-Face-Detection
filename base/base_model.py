@@ -26,12 +26,12 @@ class BaseModel:
             raise Exception("You have to build the model first!")
 
         print("Saving model...")
-        self.model.save_weights(checkpoint_path)
+        self.model.save(checkpoint_path)
         print("Model saved")
 
     def load(self, checkpoint_path):
         """
-        Function that load latest checkpoint from the experiment path defined in the config file
+        Function that load the latest checkpoint from the experiment path defined in the config file
 
         :param checkpoint_path: Path where to save the specified checkpoint
         """
@@ -47,3 +47,14 @@ class BaseModel:
         Abstract method for build a specified model
         """
         raise NotImplementedError
+
+    def get_model(self):
+        """
+        Getter function for return the instanced model
+
+        :return: The instanced model
+        """
+        if self.model is None:
+            raise Exception("You have to build the model first!")
+
+        return self.model

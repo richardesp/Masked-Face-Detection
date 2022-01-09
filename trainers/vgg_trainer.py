@@ -54,6 +54,3 @@ class ModelTrainer(BaseTrain):
                           f"{self.config.callbacks[index].early_stopping_monitor}, "
                           f"{self.config.callbacks[index].early_stopping_mode}, "
                           f"{self.config.callbacks[index].early_stopping_verbose}")
-
-    def get_callbacks(self) -> list:
-        return self.callbacks
