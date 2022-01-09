@@ -27,6 +27,7 @@
   },
   "callbacks": [
     {
+      "callback_type": "ModelCheckpoint",
       "checkpoint_monitor": "val_accuracy",
       "checkpoint_mode": "max",
       "checkpoint_save_best_only": true,
@@ -34,11 +35,19 @@
       "checkpoint_verbose": 1
     },
     {
+      "callback_type": "ModelCheckpoint",
       "checkpoint_monitor": "val_loss",
       "checkpoint_mode": "min",
       "checkpoint_save_best_only": true,
       "checkpoint_save_weights_only": false,
       "checkpoint_verbose": 1
+    },
+    {
+      "callback_type": "EarlyStopping",
+      "early_stopping_monitor": "val_loss",
+      "early_stopping_mode": "min",
+      "early_stopping_verbose": 1,
+      "early_stopping_patience": 10
     }
   ]
 }
