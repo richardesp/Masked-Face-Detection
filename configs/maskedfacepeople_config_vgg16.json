@@ -17,7 +17,8 @@
     "classifier_activation": "softmax",
     "optimizer": "Adam",
     "loss": "categorical_crossentropy",
-    "learning_rate": null
+    "learning_rate": 0.001,
+    "learning_rate_schedules": "time_based_decay"
   },
   "trainer": {
     "name": "trainer.ModelTrainer",

@@ -2,6 +2,8 @@ from base.base_trainer import BaseTrain
 import os
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import LearningRateScheduler
+from optimizers.learning_rate_schedules import LearningRateSchedules
 
 
 class ModelTrainer(BaseTrain):
@@ -54,3 +56,20 @@ class ModelTrainer(BaseTrain):
                           f"{self.config.callbacks[index].early_stopping_monitor}, "
                           f"{self.config.callbacks[index].early_stopping_mode}, "
                           f"{self.config.callbacks[index].early_stopping_verbose}")
+
+        # Appending callback for a learning rate scheduler, if it's specified
+        if self.config.model.learning_rate_schedules != "constant":
+            lr_scheduler = None
+            learning_rates_class = LearningRateSchedules(initial_learning_rate=self.config.model.learning_rate)
+
+            if self.config.model.learning_rate_schedules == "time_based_decay":
+                lr_scheduler = learning_rates_class.get_lr_time_based_decay()
+
+            self.callbacks.append(
+                LearningRateScheduler(lr_scheduler, verbose=1)
+            )
+
+            if verbose:
+                print(
+                    f"Callback for learning rate scheduler: "
+                    f"{self.config.model.learning_rate_schedules}")

@@ -69,5 +69,5 @@ class_names = ["with mask", "without mask"]
 
 # Pillow is required for work with PIL.Images
 # SciPy is required for image transformations
-history = model.fit(train_generator, epochs=15, batch_size=batch_size, validation_data=validation_generator,
+history = model.fit(train_generator, epochs=100, batch_size=batch_size, validation_data=validation_generator,
                     callbacks=callbacks)
