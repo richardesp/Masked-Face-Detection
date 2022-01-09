@@ -6,13 +6,12 @@ Abstract class for load a dataset
 
 
 class BaseDataLoader:
-    """
-    Parameterized constructor to load the configuration file of the instantiated model
-
-    :param config: config file where to load all params for load a specified dataset
-    """
-
     def __init__(self, config):
+        """
+        Parameterized constructor to load the configuration file of the instantiated model
+
+        :param config: config file where to load all params for load a specified dataset
+        """
         self.config = config
 
     def get_train_data(self):
