@@ -27,7 +27,7 @@
   },
   "callbacks": [
     {
-      "checkpoint_monitor": "val_acc",
+      "checkpoint_monitor": "val_accuracy",
       "checkpoint_mode": "max",
       "checkpoint_save_best_only": true,
       "checkpoint_save_weights_only": false,

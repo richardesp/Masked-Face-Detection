@@ -18,7 +18,7 @@ class ModelTrainer(BaseTrain):
             self.callbacks.append(
                 ModelCheckpoint(
                     filepath=os.path.join(self.config.callbacks[index].checkpoint_dir,
-                                          '%s-{epoch:02d}-{val_acc:.4f}.h5' % self.config.exp.name),
+                                          self.config.exp.name + "-" + self.config.callbacks[index].checkpoint_monitor),
                     monitor=self.config.callbacks[index].checkpoint_monitor,
                     mode=self.config.callbacks[index].checkpoint_mode,
                     save_best_only=self.config.callbacks[index].checkpoint_save_best_only,
