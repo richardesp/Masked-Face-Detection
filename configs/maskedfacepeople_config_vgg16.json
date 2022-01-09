@@ -15,8 +15,9 @@
     "pooling": "max",
     "classes": 2,
     "classifier_activation": "softmax",
-    "optimizer": "adam",
-    "loss": "categorical_crossentropy"
+    "optimizer": "Adam",
+    "loss": "categorical_crossentropy",
+    "learning_rate": null
   },
   "trainer": {
     "name": "trainer.ModelTrainer",
