@@ -4,16 +4,15 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.callbacks import LearningRateScheduler
 from optimizers.learning_rate_schedules import LearningRateSchedules
+import matplotlib.pyplot as plt
 
 
 class ModelTrainer(BaseTrain):
     def __init__(self, model, training_data, validation_data, config):
         super(ModelTrainer, self).__init__(model, training_data, validation_data, config)
         self.callbacks = []
-        self.loss = []
-        self.acc = []
-        self.val_loss = []
-        self.val_acc = []
+
+        # Previously loading callbacks for prepare the model for training
         self.load_callbacks()
 
     def load_callbacks(self, verbose=True):
@@ -73,3 +72,49 @@ class ModelTrainer(BaseTrain):
                 print(
                     f"Callback for learning rate scheduler: "
                     f"{self.config.model.learning_rate_schedules}")
+
+    def train(self, plot=True):
+        history = self.model.fit(
+            self.training_data,
+            epochs=self.config.trainer.num_epochs,
+            batch_size=self.config.trainer.batch_size,
+            validation_data=self.validation_data,
+            callbacks=self.callbacks,
+            verbose=self.config.trainer.verbose_training
+        )
+
+        # If the user specified that a graph of the training phase is saved
+        if plot:
+            # summarize history for accuracy
+            plt.plot(history.history['accuracy'])
+            plt.plot(history.history['val_accuracy'])
+            plt.title('model accuracy')
+            plt.ylabel('accuracy')
+            plt.xlabel('epoch')
+            plt.legend(['train', 'test'], loc='upper left')
+
+            if not os.path.exists(self.config.trainer.plots_dir):
+                os.mkdir(self.config.trainer.plots_dir)
+
+            # Saving history for accuracy
+            plots_path = os.path.join(self.config.trainer.plots_dir,
+                                      self.config.exp.name + "-accuracy.png")
+
+            plt.savefig(plots_path)
+
+            # Removing previously plot
+            plt.clf()
+
+            # summarize history for loss
+            plt.plot(history.history['loss'])
+            plt.plot(history.history['val_loss'])
+            plt.title('model loss')
+            plt.ylabel('loss')
+            plt.xlabel('epoch')
+            plt.legend(['train', 'test'], loc='upper left')
+
+            # Saving history for loss
+            plots_path = os.path.join(self.config.trainer.plots_dir,
+                                      self.config.exp.name + "-loss.png")
+
+            plt.savefig(plots_path)

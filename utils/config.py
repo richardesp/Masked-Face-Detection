@@ -44,5 +44,16 @@ def process_config(json_file):
                                                                       model_string_name,
                                                                       json_string_name,
                                                                       dataloader_string_name
+
                                                                   ))
+
+        # Path for saving all graphs during training phase
+        config.trainer.plots_dir = os.path.join("experiments",
+                                                time.strftime("%Y-%m-%d/", time.localtime()),
+                                                "{}-{}-{}-plots/".format(
+                                                    model_string_name,
+                                                    json_string_name,
+                                                    dataloader_string_name
+                                                ))
+
     return config

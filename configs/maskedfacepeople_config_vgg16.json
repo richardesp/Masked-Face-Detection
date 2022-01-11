@@ -22,9 +22,9 @@
   },
   "trainer": {
     "name": "trainer.ModelTrainer",
-    "num_epochs": 3000,
-    "batch_size": 10,
-    "verbose_training": false,
+    "num_epochs": 4,
+    "batch_size": 50,
+    "verbose_training": true,
     "save_pickle": true
   },
   "callbacks": [

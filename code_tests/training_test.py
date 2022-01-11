@@ -25,9 +25,6 @@ model = class_model.get_model()
 # Printing model summary for check if config file was loaded correctly
 model.summary()
 
-trainer = vgg_trainer.ModelTrainer(None, None, None, config=config_file)
-callbacks = trainer.get_callbacks()
-
 directory = '/home/ricardo/Projects/maskedFaceDetection/dataset/dataset_1_0'
 
 batch_size = 50
@@ -64,10 +61,15 @@ validation_generator = train_datagen.flow_from_directory(
 
 class_names = ["with mask", "without mask"]
 
+trainer = vgg_trainer.ModelTrainer(model, train_generator, validation_generator, config=config_file)
+callbacks = trainer.get_callbacks()
+
 # Model previously compiled
 # model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Pillow is required for work with PIL.Images
 # SciPy is required for image transformations
-history = model.fit(train_generator, epochs=100, batch_size=batch_size, validation_data=validation_generator,
-                    callbacks=callbacks)
+#history = model.fit(train_generator, epochs=5, batch_size=batch_size, validation_data=validation_generator,
+#                    callbacks=callbacks)
+
+trainer.train()

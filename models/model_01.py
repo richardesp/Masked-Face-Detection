@@ -60,4 +60,8 @@ class Model(BaseModel):
                     optimizer = Adam()
 
                 self.model.compile(optimizer=optimizer, loss=self.config.model.loss,
-                                   metrics=['accuracy', get_learning_rate.get_lr_metric(optimizer)])
+                                   metrics=['accuracy', 'loss', 'val_accuracy', 'val_loss',
+                                            get_learning_rate.get_lr_metric(optimizer)])
+
+        # Printing final model summary
+        print(self.model.summary())
