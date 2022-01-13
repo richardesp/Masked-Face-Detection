@@ -4,7 +4,18 @@
     "data_dir": "data"
   },
   "data_loader": {
-    "name": "data_loader_01.DataLoader"
+    "name": "data_loader_01.DataLoader",
+    "validation_split": 0.2,
+    "rotation_range": 40,
+    "width_shift_range": 0.2,
+    "height_shift_range": 0.2,
+    "zoom_range": 0.2,
+    "horizontal_flip": true,
+    "fill_mode": "nearest",
+    "target_size": "256, 256",
+    "color_mode": "rgb",
+    "class_mode": "categorical",
+    "seed": 2122
   },
   "model": {
     "name": "model_01",
@@ -22,7 +33,7 @@
   },
   "trainer": {
     "name": "trainer.ModelTrainer",
-    "num_epochs": 4,
+    "num_epochs": 20,
     "batch_size": 50,
     "verbose_training": true,
     "save_pickle": true

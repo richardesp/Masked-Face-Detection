@@ -9,6 +9,7 @@ from trainers import vgg_trainer
 import tensorflow as tf
 from utils import get_model_size
 from keras.preprocessing.image import ImageDataGenerator
+from data_loader import data_loader_01
 from tensorflow.keras.optimizers import Adam
 
 config_file = config.process_config("../configs/maskedfacepeople_config_vgg16.json")
@@ -32,36 +33,11 @@ batch_size = 50
 # Getting required model size
 print(f"{get_model_size.keras_model_memory_usage_in_bytes(model, batch_size) / 1000000000} GB required")
 
-train_datagen = ImageDataGenerator(validation_split=0.2,  # Splits the data into training (80%) and validation (20%)
-                                   rescale=1. / 255,
-                                   # Multiple the colors by a number between 0-1 to process data faster
-                                   rotation_range=40,  # rotate the images
-                                   width_shift_range=0.2,
-                                   height_shift_range=0.2,
-                                   zoom_range=0.2,
-                                   horizontal_flip=True,
-                                   fill_mode='nearest')  # add new pixels when the image is rotated or shifted
-
-train_generator = train_datagen.flow_from_directory(
-    directory,
-    target_size=(256, 256),
-    batch_size=batch_size,
-    color_mode="rgb",  # for coloured images
-    class_mode='categorical',
-    seed=2020,  # to make the result reproducible
-    subset='training')  # Specify this is training set
-
-validation_generator = train_datagen.flow_from_directory(
-    directory,
-    target_size=(256, 256),
-    batch_size=batch_size,
-    color_mode="rgb",  # for coloured images
-    class_mode='categorical',
-    subset='validation')  # Specify this is training set
-
 class_names = ["with mask", "without mask"]
 
-trainer = vgg_trainer.ModelTrainer(model, train_generator, validation_generator, config=config_file)
+data_loader = data_loader_01.DataLoader(config_file, directory)
+
+trainer = vgg_trainer.ModelTrainer(model, data_loader.get_training_data(), data_loader.get_validation_data(), config=config_file)
 callbacks = trainer.get_callbacks()
 
 # Model previously compiled

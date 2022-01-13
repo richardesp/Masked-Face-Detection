@@ -14,8 +14,8 @@ class BaseDataLoader:
         """
         self.config = config
 
-    def get_train_data(self):
+    def get_training_data(self):
         pass
 
-    def get_test_data(self):
+    def get_validation_data(self):
         pass
