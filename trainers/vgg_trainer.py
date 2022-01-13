@@ -118,3 +118,7 @@ class ModelTrainer(BaseTrain):
                                       self.config.exp.name + "-loss.png")
 
             plt.savefig(plots_path)
+
+        # Saving the final model
+        self.model.save(os.path.join(self.config.trainer.models_dir,
+                                     self.config.exp.name + "-final_model.h5"))

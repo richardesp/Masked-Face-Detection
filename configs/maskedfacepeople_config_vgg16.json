@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "masked_face_people",
+    "name": "mfp22_time_based_decay_256-256-3",
     "data_dir": "data"
   },
   "data_loader": {
@@ -33,7 +33,7 @@
   },
   "trainer": {
     "name": "trainer.ModelTrainer",
-    "num_epochs": 20,
+    "num_epochs": 50,
     "batch_size": 50,
     "verbose_training": true,
     "save_pickle": true
@@ -60,7 +60,7 @@
       "early_stopping_monitor": "val_loss",
       "early_stopping_mode": "min",
       "early_stopping_verbose": 1,
-      "early_stopping_patience": 10
+      "early_stopping_patience": 50
     }
   ]
 }

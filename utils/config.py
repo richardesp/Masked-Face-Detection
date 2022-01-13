@@ -56,4 +56,13 @@ def process_config(json_file):
                                                     dataloader_string_name
                                                 ))
 
+        # Path for saving final training models
+        config.trainer.models_dir = os.path.join("experiments",
+                                                 time.strftime("%Y-%m-%d/", time.localtime()),
+                                                 "{}-{}-{}-models/".format(
+                                                     model_string_name,
+                                                     json_string_name,
+                                                     dataloader_string_name
+                                                 ))
+
     return config
