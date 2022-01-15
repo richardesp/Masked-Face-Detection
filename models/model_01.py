@@ -9,7 +9,8 @@ from base.base_model import BaseModel
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
 from utils import get_learning_rate
-
+from keras.models import Sequential
+from keras.layers import Dense, Conv2D, MaxPool2D , Flatten
 
 class Model(BaseModel):
     def __init__(self, config):
@@ -27,16 +28,32 @@ class Model(BaseModel):
 
         :param compilation: Boolean to compile the resulting model
         """
-        self.model = tf.keras.applications.VGG16(
-            include_top=self.config.model.include_top,
-            weights=self.config.model.weights,
-            input_tensor=self.config.model.input_tensor,
-            # Maximum size given my gpu
-            input_shape=tuple(map(int, self.config.model.input_shape.split(', '))),
-            pooling=self.config.model.pooling,
-            classes=self.config.model.classes,
-            classifier_activation=self.config.model.classifier_activation,
-        )
+        model = Sequential()
+        model.add(Conv2D(input_shape=(224, 224, 3), filters=64, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(filters=64, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
+        model.add(Conv2D(filters=128, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(filters=128, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
+        model.add(Conv2D(filters=256, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(filters=256, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(filters=256, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
+        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
+        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
+        model.add(Flatten())
+
+        model.add(Dense(units=4096, activation="relu"))
+        model.add(Dense(units=4096, activation="relu"))
+        model.add(Dense(units=2, activation="softmax"))
+
+        self.model = model
 
         # If user indicated that wants the model compiled
         if compilation:
@@ -59,9 +76,9 @@ class Model(BaseModel):
                 if self.config.model.optimizer == "Adam":
                     optimizer = Adam()
 
-                self.model.compile(optimizer=optimizer, loss=self.config.model.loss,
-                                   metrics=['accuracy', 'loss', 'val_accuracy', 'val_loss',
-                                            get_learning_rate.get_lr_metric(optimizer)])
+                self.model.compile(optimizer=optimizer,
+                                   loss=self.config.model.loss,
+                                   metrics=['accuracy', get_learning_rate.get_lr_metric(optimizer)])
 
         # Printing final model summary
         print(self.model.summary())
