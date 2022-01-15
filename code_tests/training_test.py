@@ -23,21 +23,20 @@ class_model = model_01.Model(config_file)
 class_model.build_model(compilation=True)
 model = class_model.get_model()
 
-# Printing model summary for check if config file was loaded correctly
-model.summary()
-
-directory = '/home/ricardo/Projects/maskedFaceDetection/dataset/dataset_1_0'
+directory = '/home/ricardo/Projects/maskedFaceDetection/dataset/mfd_dataset_reduced'
 
 batch_size = 50
 
 # Getting required model size
-print(f"{get_model_size.keras_model_memory_usage_in_bytes(model, batch_size) / 1000000000} GB required")
+print(
+    f"{get_model_size.keras_model_memory_usage_in_bytes(model, config_file.trainer.batch_size) / 1000000000} GB required")
 
 class_names = ["with mask", "without mask"]
 
 data_loader = data_loader_01.DataLoader(config_file, directory)
 
-trainer = vgg_trainer.ModelTrainer(model, data_loader.get_training_data(), data_loader.get_validation_data(), config=config_file)
+trainer = vgg_trainer.ModelTrainer(model, data_loader.get_training_data(), data_loader.get_validation_data(),
+                                   config=config_file)
 callbacks = trainer.get_callbacks()
 
 # Model previously compiled
@@ -45,7 +44,7 @@ callbacks = trainer.get_callbacks()
 
 # Pillow is required for work with PIL.Images
 # SciPy is required for image transformations
-#history = model.fit(train_generator, epochs=5, batch_size=batch_size, validation_data=validation_generator,
+# history = model.fit(train_generator, epochs=5, batch_size=batch_size, validation_data=validation_generator,
 #                    callbacks=callbacks)
 
 trainer.train()
