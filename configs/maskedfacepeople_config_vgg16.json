@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "mfp22_time_based_decay_256-256-3",
+    "name": "mfp22_time_based_decay_224-244-1",
     "data_dir": "data"
   },
   "data_loader": {
@@ -12,7 +12,7 @@
     "zoom_range": 0.2,
     "horizontal_flip": true,
     "fill_mode": "nearest",
-    "target_size": "256, 256",
+    "target_size": "224, 224",
     "color_mode": "rgb",
     "class_mode": "categorical",
     "seed": 2122
@@ -22,19 +22,19 @@
     "include_top": true,
     "weights": null,
     "input_tensor": null,
-    "input_shape": "256, 256, 3",
+    "input_shape": "224, 224, 3",
     "pooling": "max",
     "classes": 2,
     "classifier_activation": "softmax",
     "optimizer": "Adam",
     "loss": "categorical_crossentropy",
-    "learning_rate": 0.001,
+    "learning_rate": 0.0001,
     "learning_rate_schedules": "time_based_decay"
   },
   "trainer": {
     "name": "trainer.ModelTrainer",
-    "num_epochs": 50,
-    "batch_size": 50,
+    "num_epochs": 100,
+    "batch_size": 64,
     "verbose_training": true,
     "save_pickle": true
   },
@@ -57,10 +57,10 @@
     },
     {
       "callback_type": "EarlyStopping",
-      "early_stopping_monitor": "val_loss",
-      "early_stopping_mode": "min",
+      "early_stopping_monitor": "val_accuracy",
+      "early_stopping_mode": "max",
       "early_stopping_verbose": 1,
-      "early_stopping_patience": 50
+      "early_stopping_patience": 20
     }
   ]
 }
