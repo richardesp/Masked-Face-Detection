@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "mfp22_time_based_decay_224-244-1",
+    "name": "mfp22_time_based_decay_224-244-3",
     "data_dir": "data"
   },
   "data_loader": {
@@ -12,7 +12,7 @@
     "zoom_range": 0.2,
     "horizontal_flip": true,
     "fill_mode": "nearest",
-    "target_size": "224, 224",
+    "target_size": "128, 128",
     "color_mode": "rgb",
     "class_mode": "categorical",
     "seed": 2122
@@ -22,18 +22,89 @@
     "include_top": true,
     "weights": null,
     "input_tensor": null,
-    "input_shape": "224, 224, 3",
+    "input_shape": "128, 128, 3",
     "pooling": "max",
     "classes": 2,
     "classifier_activation": "softmax",
     "optimizer": "Adam",
     "loss": "categorical_crossentropy",
     "learning_rate": 0.0001,
-    "learning_rate_schedules": "time_based_decay"
+    "learning_rate_schedules": "time_based_decay",
+    "input_layers": [
+      {
+        "shape": "128, 128, 3"
+      }
+    ],
+    "conv_blocks": [
+      {
+        "filters": 64,
+        "kernel_size": "3, 3",
+        "padding": "same",
+        "activation": "relu",
+        "pool_size": "2, 2",
+        "strides": "2, 2",
+        "num_conv_layers": 2,
+        "dropout_layer": false
+      },
+      {
+        "filters": 128,
+        "kernel_size": "3, 3",
+        "padding": "same",
+        "activation": "relu",
+        "pool_size": "2, 2",
+        "strides": "2, 2",
+        "num_conv_layers": 2,
+        "dropout_layer": false
+      },
+      {
+        "filters": 256,
+        "kernel_size": "3, 3",
+        "padding": "same",
+        "activation": "relu",
+        "pool_size": "2, 2",
+        "strides": "2, 2",
+        "num_conv_layers": 3,
+        "dropout_layer": false
+      },
+      {
+        "filters": 512,
+        "kernel_size": "3, 3",
+        "padding": "same",
+        "activation": "relu",
+        "pool_size": "2, 2",
+        "strides": "2, 2",
+        "num_conv_layers": 3,
+        "dropout_layer": false
+      },
+      {
+        "filters": 512,
+        "kernel_size": "3, 3",
+        "padding": "same",
+        "activation": "relu",
+        "pool_size": "2, 2",
+        "strides": "2, 2",
+        "num_conv_layers": 3,
+        "dropout_layer": false
+      }
+    ],
+    "dense_layers": [
+      {
+        "units": 2048,
+        "activation": "relu"
+      },
+      {
+        "units": 2048,
+        "activation": "relu"
+      },
+      {
+        "units": 2,
+        "activation": "softmax"
+      }
+    ]
   },
   "trainer": {
     "name": "trainer.ModelTrainer",
-    "num_epochs": 100,
+    "num_epochs": 50,
     "batch_size": 64,
     "verbose_training": true,
     "save_pickle": true
@@ -60,7 +131,7 @@
       "early_stopping_monitor": "val_accuracy",
       "early_stopping_mode": "max",
       "early_stopping_verbose": 1,
-      "early_stopping_patience": 20
+      "early_stopping_patience": 10
     }
   ]
 }

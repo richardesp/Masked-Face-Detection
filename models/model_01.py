@@ -10,7 +10,8 @@ import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
 from utils import get_learning_rate
 from keras.models import Sequential
-from keras.layers import Dense, Conv2D, MaxPool2D , Flatten
+from keras.layers import Dense, Conv2D, MaxPool2D, Flatten
+
 
 class Model(BaseModel):
     def __init__(self, config):
@@ -26,34 +27,38 @@ class Model(BaseModel):
         """
         Implemented function of the abstract class base_model, to create the specific instance of the model
 
+        This specific implementation is based in typical VGG16 architecture
+
+        A convolutional block consist: in 2/3 convolutional layers and a max Pooling layer
+
         :param compilation: Boolean to compile the resulting model
         """
-        model = Sequential()
-        model.add(Conv2D(input_shape=(224, 224, 3), filters=64, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(Conv2D(filters=64, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
-        model.add(Conv2D(filters=128, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(Conv2D(filters=128, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
-        model.add(Conv2D(filters=256, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(Conv2D(filters=256, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(Conv2D(filters=256, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
-        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
-        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(Conv2D(filters=512, kernel_size=(3, 3), padding="same", activation="relu"))
-        model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
-        model.add(Flatten())
+        self.model = Sequential()
 
-        model.add(Dense(units=4096, activation="relu"))
-        model.add(Dense(units=4096, activation="relu"))
-        model.add(Dense(units=2, activation="softmax"))
+        # Adding input_layers to te sequential model
+        for input_layer in self.config.model.input_layers:
+            self.model.add(tf.keras.Input(shape=tuple(map(int, input_layer.shape.split(', ')))))
 
-        self.model = model
+        # Adding convolutional blocks to the sequential model
+        for conv_block in self.config.model.conv_blocks:
+
+            # Each block can contain between 2 and 3 layers of conv
+            for num in range(conv_block.num_conv_layers):
+                self.model.add(
+                    Conv2D(filters=conv_block.filters,
+                           kernel_size=tuple(map(int, conv_block.kernel_size.split(', '))),
+                           padding=conv_block.padding,
+                           activation=conv_block.activation))
+
+            # Final maxPool layer in each convolution block
+            self.model.add(MaxPool2D(pool_size=tuple(map(int, conv_block.pool_size.split(', '))),
+                                     strides=tuple(map(int, conv_block.strides.split(', ')))))
+
+        self.model.add(Flatten())
+
+        # Adding final dense layers
+        for dense_layer in self.config.model.dense_layers:
+            self.model.add(Dense(units=dense_layer.units, activation=dense_layer.activation))
 
         # If user indicated that wants the model compiled
         if compilation:
