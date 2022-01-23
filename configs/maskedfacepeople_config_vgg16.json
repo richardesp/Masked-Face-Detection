@@ -1,7 +1,7 @@
 {
   "exp": {
     "name": "mfp22_time_based_decay_224-244-3",
-    "data_dir": "data"
+    "data_dir": "datasets/mfd_dataset_reduced"
   },
   "data_loader": {
     "name": "data_loader_01.DataLoader",
@@ -18,7 +18,7 @@
     "seed": 2122
   },
   "model": {
-    "name": "model_01",
+    "name": "model_01.Model",
     "include_top": true,
     "weights": null,
     "input_tensor": null,
@@ -103,7 +103,7 @@
     ]
   },
   "trainer": {
-    "name": "trainer.ModelTrainer",
+    "name": "vgg_trainer.ModelTrainer",
     "num_epochs": 50,
     "batch_size": 64,
     "verbose_training": true,

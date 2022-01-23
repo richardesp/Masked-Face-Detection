@@ -21,7 +21,7 @@ class Model(BaseModel):
         :param config: Configuration file where read all models params required for the creation
         """
         super(Model, self).__init__(config)
-        self.build_model()
+        self.build_model(compilation=True)
 
     def build_model(self, compilation=False):
         """
