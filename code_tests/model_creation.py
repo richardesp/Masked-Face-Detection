@@ -7,7 +7,7 @@ from utils import get_model_size
 
 class MyTestCase(unittest.TestCase):
     def test_creation_model(self):
-        config_file = config.process_config("../configs/maskedfacepeople_config_vgg16.json")
+        config_file = config.process_config("../configs/maskedfacepeople_exp_001.json")
         class_model = model_01.Model(config_file)
         class_model.build_model()
         model = class_model.get_model()

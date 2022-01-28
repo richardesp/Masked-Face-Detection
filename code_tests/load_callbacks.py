@@ -5,7 +5,7 @@ from utils import config
 
 class MyTestCase(unittest.TestCase):
     def test_load_callbacks(self):
-        config_file = config.process_config("../configs/maskedfacepeople_config_vgg16.json")
+        config_file = config.process_config("../configs/maskedfacepeople_exp_001.json")
         trainer = vgg_trainer.ModelTrainer(None, None, None, config=config_file)
         callbacks = trainer.get_callbacks()
         self.assertGreater(callbacks.__len__(), 0, "Callbacks list is empty")

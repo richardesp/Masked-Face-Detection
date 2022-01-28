@@ -12,7 +12,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from data_loader import data_loader_01
 from tensorflow.keras.optimizers import Adam
 
-config_file = config.process_config("../configs/maskedfacepeople_config_vgg16.json")
+config_file = config.process_config("../configs/maskedfacepeople_exp_001.json")
 
 # Allowing to get more GPU memory
 config = tf.compat.v1.ConfigProto()
@@ -23,9 +23,9 @@ class_model = model_01.Model(config_file)
 class_model.build_model(compilation=True)
 model = class_model.get_model()
 
-directory = '/home/ricardo/Projects/maskedFaceDetection/dataset/mfd_dataset_reduced'
+directory = '/home/ricardo/Projects/maskedFaceDetection/dataset/mfd_dataset_v2'
 
-batch_size = 50
+batch_size = 64
 
 # Getting required model size
 print(
