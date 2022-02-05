@@ -9,7 +9,7 @@ mp_face_detection = mp.solutions.face_detection
 mp_drawing = mp.solutions.drawing_utils
 
 class_names = ["Without", "With"]
-model_path = '/home/ricardo/PycharmProjects/maskedFaceDetection/experiments/2022-01-27/m01-004-dl01-checkpoints/maskedfacepeople_exp_004-val_loss.h5'
+model_path = '../experiments/2022-01-27/m01-004-dl01-checkpoints/maskedfacepeople_exp_004-val_loss.h5'
 
 optimizer = Adam()
 customMetric = get_learning_rate.get_lr_metric(optimizer)

@@ -15,7 +15,7 @@ def main():
     mp_drawing = mp.solutions.drawing_utils
 
     class_names = ["With", "Without"]
-    model_path = '/home/ricardo/PycharmProjects/maskedFaceDetection/experiments/2022-01-27/m01-004-dl01-checkpoints/maskedfacepeople_exp_004-val_loss.h5'
+    model_path = '../experiments/2022-01-27/m01-004-dl01-checkpoints/maskedfacepeople_exp_004-val_loss.h5'
 
     optimizer = Adam()
 

@@ -7,7 +7,7 @@ from tensorflow.keras.optimizers import Adam
 optimizer = Adam(0.0001)
 customMetric = get_learning_rate.get_lr_metric(optimizer)
 model = load_model(
-    '/home/ricardo/PycharmProjects/maskedFaceDetection/experiments/2022-01-27/m01-004-dl01-checkpoints/maskedfacepeople_exp_004-val_loss.h5',
+    '../experiments/2022-01-27/m01-004-dl01-checkpoints/maskedfacepeople_exp_004-val_loss.h5',
     custom_objects={"lr": customMetric})
 
 img_path = "/home/ricardo/Downloads/image_black.webp"
