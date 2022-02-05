@@ -53,7 +53,7 @@ with mp_face_detection.FaceDetection(
 
                 print(x_min, y_min, w, h)
 
-                if crop_img.__len__() > 0:
+                if crop_img.size > 0:
 
                     print(crop_img)
 
