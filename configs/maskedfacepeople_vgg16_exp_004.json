@@ -13,7 +13,7 @@
     "horizontal_flip": true,
     "fill_mode": "nearest",
     "target_size": "224, 224",
-    "color_mode": "rgb",
+    "color_mode": "grayscale",
     "class_mode": "categorical",
     "seed": 2122
   },
@@ -32,7 +32,7 @@
     "learning_rate_schedules": "time_based_decay",
     "input_layers": [
       {
-        "shape": "224, 224, 3"
+        "shape": "224, 224, 1"
       }
     ],
     "conv_blocks": [
@@ -131,7 +131,7 @@
       "early_stopping_monitor": "val_loss",
       "early_stopping_mode": "min",
       "early_stopping_verbose": 1,
-      "early_stopping_patience": 100
+      "early_stopping_patience": 300
     }
   ]
 }
