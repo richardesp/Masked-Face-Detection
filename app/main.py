@@ -14,7 +14,7 @@ def main():
     mp_face_detection = mp.solutions.face_detection
     mp_drawing = mp.solutions.drawing_utils
 
-    class_names = ["Without", "With"]
+    class_names = ["With", "Without"]
     model_path = '/home/ricardo/PycharmProjects/maskedFaceDetection/experiments/2022-01-27/m01-004-dl01-checkpoints/maskedfacepeople_exp_004-val_loss.h5'
 
     optimizer = Adam()
@@ -66,51 +66,48 @@ def main():
                             h = int(detection.location_data.relative_bounding_box.height * height)
                             crop_img = self.out_image[y_min:y_min + h, x_min:x_min + h]
 
-                            crop_img = cv2.resize(crop_img, (224, 224))
-                            crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
-                            crop_img = crop_img.astype(np.float32)
-                            crop_img /= 255.
+                            if crop_img.__len__() > 0:
 
-                            face_to_predict = crop_img.reshape(-1, 224, 224, 3)
-                            prediction = model.predict(face_to_predict)
-                            class_index = prediction.argmax()
+                                crop_img = cv2.resize(crop_img, (224, 224))
+                                crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+                                crop_img = crop_img.astype(np.float32)
+                                crop_img /= 255.
 
-                            print(prediction)
-                            print(class_index)
+                                face_to_predict = crop_img.reshape(-1, 224, 224, 3)
+                                prediction = model.predict(face_to_predict)
+                                class_index = prediction.argmax()
 
-                            confidence = np.amax(prediction)
+                                confidence = np.amax(prediction)
 
-                            if confidence > threshold:
-                                if class_index == 0:
-                                    cv2.rectangle(self.out_image, (x_min, y_min), (x_min + w, y_min + h), (0, 255, 0),
-                                                  2)
-                                    cv2.rectangle(self.out_image, (x_min, y_min - 40), (x_min + w, y_min), (0, 255, 0),
-                                                  -2)
+                                if confidence > threshold:
+                                    if class_index == 0:
+                                        cv2.rectangle(self.out_image, (x_min, y_min), (x_min + w, y_min + h),
+                                                      (0, 255, 0),
+                                                      2)
+                                        cv2.rectangle(self.out_image, (x_min, y_min - 40), (x_min + w, y_min),
+                                                      (0, 255, 0),
+                                                      -2)
 
-                                    """
-                                    # Using 4 decimals for probability value
-                                    cv2.putText(self.out_image,
-                                                str(class_names[class_index]) + " " + str(round(confidence, 4)),
-                                                (x_min, y_mi - 10), font,
-                                                0.75, (255, 255, 255), 1,
-                                                cv2.LINE_AA)
-                                    """
+                                        # Using 4 decimals for probability value
+                                        cv2.putText(self.out_image,
+                                                    str(class_names[class_index]) + " " + str(round(confidence, 4)),
+                                                    (x_min, y_min - 10), cv2.FONT_HERSHEY_DUPLEX,
+                                                    0.75, (255, 255, 255), 1,
+                                                    cv2.LINE_AA)
 
-                                elif class_index == 1:
-                                    cv2.rectangle(self.out_image, (x_min, y_min), (x_min + w, y_min + h), (50, 50, 255),
-                                                  2)
-                                    cv2.rectangle(self.out_image, (x_min, y_min - 40), (x_min + w, y_min),
-                                                  (50, 50, 255), -2)
+                                    elif class_index == 1:
+                                        cv2.rectangle(self.out_image, (x_min, y_min), (x_min + w, y_min + h),
+                                                      (50, 50, 255),
+                                                      2)
+                                        cv2.rectangle(self.out_image, (x_min, y_min - 40), (x_min + w, y_min),
+                                                      (50, 50, 255), -2)
 
-                                    """
-                                    # Using 4 decimals for probability value
-                                    cv2.putText(imgOrignal,
-                                                str(class_names[classIndex]) + " " + str(round(probabilityValue, 4)),
-                                                (x, y - 10), font,
-                                                0.75,
-                                                (255, 255, 255), 1,
-                                                cv2.LINE_AA)
-                                    """
+                                        # Using 4 decimals for probability value
+                                        cv2.putText(self.out_image,
+                                                    str(class_names[class_index]) + " " + str(round(confidence, 4)),
+                                                    (x_min, y_min - 10), cv2.FONT_HERSHEY_DUPLEX,
+                                                    0.75, (255, 255, 255), 1,
+                                                    cv2.LINE_AA)
 
             return self.out_image
 
