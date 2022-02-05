@@ -66,7 +66,7 @@ def main():
                             h = int(detection.location_data.relative_bounding_box.height * height)
                             crop_img = self.out_image[y_min:y_min + h, x_min:x_min + h]
 
-                            if crop_img.__len__() > 0:
+                            if crop_img.size > 0:
 
                                 crop_img = cv2.resize(crop_img, (224, 224))
                                 crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
