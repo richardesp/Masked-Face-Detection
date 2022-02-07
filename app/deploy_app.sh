@@ -1,3 +1,3 @@
 #!/bin/bash
 
-streamlit run /home/ricardo/PycharmProjects/maskedFaceDetection/app/main.py
+streamlit run main.py
