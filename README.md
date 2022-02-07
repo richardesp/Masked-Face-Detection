@@ -1,13 +1,40 @@
 # Masked face people detection
 This repository consists of the implementation of a VGG16 convolutional model for the detection of people with masks
 
+### Installation guide
+
+First at all, you must clone the repository.
+
+```bash
+git clone https://github.com/richardesp/Masked-Face-Detection
+```
+
+Right now, you must go into the root directory. After, you must create a new virtual environment.
+
+```bash
+virtualenv venv
+```
+
+Once created, you must activate it.
+
+```bash
+root_path=$(pwd)
+
+. venv/bin/activate
+export PYTHONPATH=$PYTHONPATH:$root_path
+```
+
+Finally, you must install all dependencies from requirements file.
+
+```bash
+pip install -r requirements.txt
+```
+
 For use the trained model, you must download the model in the following link to google drive [here](https://drive.google.com/file/d/185ye-JuwDpGiUXkuD-6ZrPCWu_7O3ASm/view?usp=sharing). Once downloaded, you must unzip the file and put it in the root directory of the project (Masked Face Detection folder).
 
 ### Deploying the app in streamlit (Linux)
 
 You must activate the virtual environment of python, to later be able to deploy the application. To start the environment, copy and paste the following code into your terminal at the root of the project.
-
-
 
 ```bash
 root_path=$(pwd)
