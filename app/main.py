@@ -68,7 +68,6 @@ def main():
 
                             if crop_img.size > 0:
 
-                                print(crop_img)
                                 crop_img = cv2.resize(crop_img, (224, 224))
                                 crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
                                 crop_img = crop_img.astype(np.float32)
