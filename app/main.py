@@ -8,6 +8,7 @@ from streamlit_webrtc import VideoTransformerBase, webrtc_streamer
 import threading
 from typing import Union
 import av
+from streamlit_option_menu import option_menu
 
 
 def main():
@@ -25,93 +26,106 @@ def main():
 
     model = load_model(model_path, compile=False)
 
-    class VideoTransformer(VideoTransformerBase):
-        frame_lock: threading.Lock  # `transform()` is running in another thread, then a lock object is used here for thread-safety.
-        in_image: Union[np.ndarray, None]
-        out_image: Union[np.ndarray, None]
+    with st.sidebar:
+        selected = option_menu("Input menu", ["Webcam", "Youtube video", "Image"],
+                               icons=["webcam", "youtube", "images"], default_index=0)
 
-        def __init__(self) -> None:
-            self.frame_lock = threading.Lock()
-            self.in_image = None
-            self.out_image = None
+    if selected == "Webcam":
+        st.write("Webcam mode")
 
-        def transform(self, frame: av.VideoFrame) -> np.ndarray:
-            in_image = frame.to_ndarray(format="bgr24")
+        class VideoTransformer(VideoTransformerBase):
+            frame_lock: threading.Lock  # `transform()` is running in another thread, then a lock object is used here for thread-safety.
+            in_image: Union[np.ndarray, None]
+            out_image: Union[np.ndarray, None]
 
-            with self.frame_lock:
-                self.in_image = in_image
-                self.out_image = in_image
+            def __init__(self) -> None:
+                self.frame_lock = threading.Lock()
+                self.in_image = None
+                self.out_image = None
 
-                with mp_face_detection.FaceDetection(
-                        model_selection=0, min_detection_confidence=0.5) as face_detection:
+            def transform(self, frame: av.VideoFrame) -> np.ndarray:
+                in_image = frame.to_ndarray(format="bgr24")
 
-                    # To improve performance, optionally mark the image as not writeable to
-                    # pass by reference.
-                    self.out_image.flags.writeable = False
-                    self.out_image = cv2.cvtColor(self.in_image, cv2.COLOR_BGR2RGB)
+                with self.frame_lock:
+                    self.in_image = in_image
+                    self.out_image = in_image
 
-                    results = face_detection.process(self.out_image)
+                    with mp_face_detection.FaceDetection(
+                            model_selection=0, min_detection_confidence=0.5) as face_detection:
 
-                    # Draw the face detection annotations on the image.
-                    self.out_image.flags.writeable = True
-                    self.out_image = cv2.cvtColor(self.out_image, cv2.COLOR_RGB2BGR)
+                        # To improve performance, optionally mark the image as not writeable to
+                        # pass by reference.
+                        self.out_image.flags.writeable = False
+                        self.out_image = cv2.cvtColor(self.in_image, cv2.COLOR_BGR2RGB)
 
-                    height, width, _ = self.out_image.shape
+                        results = face_detection.process(self.out_image)
 
-                    if results.detections:
-                        for detection in results.detections:
-                            x_min = int(detection.location_data.relative_bounding_box.xmin * width)
-                            y_min = int(detection.location_data.relative_bounding_box.ymin * height)
-                            w = int(detection.location_data.relative_bounding_box.width * width)
-                            h = int(detection.location_data.relative_bounding_box.height * height)
-                            crop_img = self.out_image[y_min:y_min + h, x_min:x_min + h]
+                        # Draw the face detection annotations on the image.
+                        self.out_image.flags.writeable = True
+                        self.out_image = cv2.cvtColor(self.out_image, cv2.COLOR_RGB2BGR)
 
-                            if crop_img.size > 0:
+                        height, width, _ = self.out_image.shape
 
-                                crop_img = cv2.resize(crop_img, (224, 224))
-                                crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
-                                crop_img = crop_img.astype(np.float32)
-                                crop_img /= 255.
+                        if results.detections:
+                            for detection in results.detections:
+                                x_min = int(detection.location_data.relative_bounding_box.xmin * width)
+                                y_min = int(detection.location_data.relative_bounding_box.ymin * height)
+                                w = int(detection.location_data.relative_bounding_box.width * width)
+                                h = int(detection.location_data.relative_bounding_box.height * height)
+                                crop_img = self.out_image[y_min:y_min + h, x_min:x_min + h]
 
-                                face_to_predict = crop_img.reshape(-1, 224, 224, 3)
-                                prediction = model.predict(face_to_predict)
-                                class_index = prediction.argmax()
+                                if crop_img.size > 0:
 
-                                confidence = np.amax(prediction)
+                                    crop_img = cv2.resize(crop_img, (224, 224))
+                                    crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+                                    crop_img = crop_img.astype(np.float32)
+                                    crop_img /= 255.
 
-                                if confidence > threshold:
-                                    if class_index == 0:
-                                        cv2.rectangle(self.out_image, (x_min, y_min), (x_min + w, y_min + h),
-                                                      (0, 255, 0),
-                                                      2)
-                                        cv2.rectangle(self.out_image, (x_min, y_min - 40), (x_min + w, y_min),
-                                                      (0, 255, 0),
-                                                      -2)
+                                    face_to_predict = crop_img.reshape(-1, 224, 224, 3)
+                                    prediction = model.predict(face_to_predict)
+                                    class_index = prediction.argmax()
 
-                                        # Using 4 decimals for probability value
-                                        cv2.putText(self.out_image,
-                                                    str(class_names[class_index]) + " " + str(round(confidence, 4)),
-                                                    (x_min, y_min - 10), cv2.FONT_HERSHEY_DUPLEX,
-                                                    0.75, (255, 255, 255), 1,
-                                                    cv2.LINE_AA)
+                                    confidence = np.amax(prediction)
 
-                                    elif class_index == 1:
-                                        cv2.rectangle(self.out_image, (x_min, y_min), (x_min + w, y_min + h),
-                                                      (50, 50, 255),
-                                                      2)
-                                        cv2.rectangle(self.out_image, (x_min, y_min - 40), (x_min + w, y_min),
-                                                      (50, 50, 255), -2)
+                                    if confidence > threshold:
+                                        if class_index == 0:
+                                            cv2.rectangle(self.out_image, (x_min, y_min), (x_min + w, y_min + h),
+                                                          (0, 255, 0),
+                                                          2)
+                                            cv2.rectangle(self.out_image, (x_min, y_min - 40), (x_min + w, y_min),
+                                                          (0, 255, 0),
+                                                          -2)
 
-                                        # Using 4 decimals for probability value
-                                        cv2.putText(self.out_image,
-                                                    str(class_names[class_index]) + " " + str(round(confidence, 4)),
-                                                    (x_min, y_min - 10), cv2.FONT_HERSHEY_DUPLEX,
-                                                    0.75, (255, 255, 255), 1,
-                                                    cv2.LINE_AA)
+                                            # Using 4 decimals for probability value
+                                            cv2.putText(self.out_image,
+                                                        str(class_names[class_index]) + " " + str(round(confidence, 4)),
+                                                        (x_min, y_min - 10), cv2.FONT_HERSHEY_DUPLEX,
+                                                        0.75, (255, 255, 255), 1,
+                                                        cv2.LINE_AA)
 
-            return self.out_image
+                                        elif class_index == 1:
+                                            cv2.rectangle(self.out_image, (x_min, y_min), (x_min + w, y_min + h),
+                                                          (50, 50, 255),
+                                                          2)
+                                            cv2.rectangle(self.out_image, (x_min, y_min - 40), (x_min + w, y_min),
+                                                          (50, 50, 255), -2)
 
-    ctx = webrtc_streamer(key="start", video_processor_factory=VideoTransformer)
+                                            # Using 4 decimals for probability value
+                                            cv2.putText(self.out_image,
+                                                        str(class_names[class_index]) + " " + str(round(confidence, 4)),
+                                                        (x_min, y_min - 10), cv2.FONT_HERSHEY_DUPLEX,
+                                                        0.75, (255, 255, 255), 1,
+                                                        cv2.LINE_AA)
+
+                return self.out_image
+
+        ctx = webrtc_streamer(key="start", video_processor_factory=VideoTransformer)
+
+    elif selected == "Youtube video":
+        st.write("Youtube video mode")
+
+    else:
+        st.write("Image mode")
 
 
 if __name__ == "__main__":
