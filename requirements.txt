@@ -113,7 +113,7 @@ pycryptodome==3.12.0
 pydantic==1.9.0
 pydeck==0.7.1
 pydub==0.25.1
-pyee==9.0.4
+pyee==9.0.3
 Pygments==2.11.2
 pylibsrtp==0.7.1
 Pympler==1.0.1
@@ -165,4 +165,5 @@ Werkzeug==2.0.2
 widgetsnbextension==3.5.2
 wrapt==1.13.3
 yarl==1.7.2
+youtube-dl==2021.12.17
 zipp==3.7.0

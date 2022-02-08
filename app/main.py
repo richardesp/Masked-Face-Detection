@@ -9,6 +9,7 @@ import threading
 from typing import Union
 import av
 from streamlit_option_menu import option_menu
+import youtube_dl
 
 
 def main():
@@ -34,7 +35,7 @@ def main():
         st.write("Webcam mode")
 
         class VideoTransformer(VideoTransformerBase):
-            frame_lock: threading.Lock  # `transform()` is running in another thread, then a lock object is used here for thread-safety.
+            frame_lock: threading.Lock  # transform() is running in another thread, then a lock object is used here for thread-safety.
             in_image: Union[np.ndarray, None]
             out_image: Union[np.ndarray, None]
 
@@ -123,6 +124,125 @@ def main():
 
     elif selected == "Youtube video":
         st.write("Youtube video mode")
+
+        video_url = st.text_input("The URL link")
+
+        print(video_url)
+
+        if video_url != '':
+
+            ydl_opts = {}
+
+            frame_window = st.image([])
+
+            # create youtube-dl object.
+            ydl = youtube_dl.YoutubeDL(ydl_opts)
+
+            # set video url, extract video information.
+            info_dict = ydl.extract_info(video_url, download=False)
+
+            # get video formats available.
+            formats = info_dict.get('formats', None)
+
+            for f in formats:
+
+                # Here you can specify the resolution.
+                if f.get('format_note', None) == '480p':
+
+                    # get the video url
+                    url = f.get('url', None)
+
+                    # open url with opencv
+                    cap = cv2.VideoCapture(url)
+
+                    # check if url was opened
+                    if not cap.isOpened():
+                        st.write("The video could not be reproduced")
+                        break
+
+                    while True:
+                        with mp_face_detection.FaceDetection(
+                                model_selection=0, min_detection_confidence=0.6) as face_detection:
+                            # read frame.
+                            ret, image = cap.read()
+
+                            # check if frame is empty.
+                            if not ret:
+                                break
+
+                            height, width, _ = image.shape
+
+                            # To improve performance, optionally mark the image as not writeable to
+                            # pass by reference.
+                            image.flags.writeable = False
+                            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                            results = face_detection.process(image)
+
+                            # Draw the face detection annotations on the image.
+                            image.flags.writeable = True
+                            # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+                            if results.detections:
+                                for detection in results.detections:
+
+                                    x_min = int(detection.location_data.relative_bounding_box.xmin * width)
+                                    y_min = int(detection.location_data.relative_bounding_box.ymin * height)
+                                    w = int(detection.location_data.relative_bounding_box.width * width)
+                                    h = int(detection.location_data.relative_bounding_box.height * height)
+                                    crop_img = image[y_min:y_min + h, x_min:x_min + h]
+
+                                    if crop_img.size > 0:
+
+                                        crop_img = cv2.resize(crop_img, (224, 224))
+                                        # crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+                                        crop_img = crop_img.astype(np.float32)
+                                        crop_img /= 255.
+
+                                        face_to_predict = crop_img.reshape(-1, 224, 224, 3)
+                                        prediction = model.predict(face_to_predict)
+                                        class_index = prediction.argmax()
+
+                                        confidence = np.amax(prediction)
+
+                                        if confidence > threshold:
+                                            if class_index == 0:
+                                                cv2.rectangle(image, (x_min, y_min), (x_min + w, y_min + h),
+                                                              (0, 255, 0),
+                                                              2)
+                                                cv2.rectangle(image, (x_min, y_min - 40), (x_min + w, y_min),
+                                                              (0, 255, 0),
+                                                              -2)
+
+                                                # Using 4 decimals for probability value
+                                                cv2.putText(image,
+                                                            str(class_names[class_index]) + " " + str(
+                                                                round(confidence, 4)),
+                                                            (x_min, y_min - 10), cv2.FONT_HERSHEY_DUPLEX,
+                                                            0.75, (255, 255, 255), 1,
+                                                            cv2.LINE_AA)
+
+                                            elif class_index == 1:
+                                                cv2.rectangle(image, (x_min, y_min), (x_min + w, y_min + h),
+                                                              (255, 50, 50),
+                                                              2)
+                                                cv2.rectangle(image, (x_min, y_min - 40), (x_min + w, y_min),
+                                                              (255, 50, 50), -2)
+
+                                                # Using 4 decimals for probability value
+                                                cv2.putText(image,
+                                                            str(class_names[class_index]) + " " + str(
+                                                                round(confidence, 4)),
+                                                            (x_min, y_min - 10), cv2.FONT_HERSHEY_DUPLEX,
+                                                            0.75, (255, 255, 255), 1,
+                                                            cv2.LINE_AA)
+
+                            frame_window.image(image)
+
+                    # release VideoCapture.
+                    cap.release()
+
+                    # Deleting previously url entered.
+                    video_url = ""
 
     else:
         st.write("Image mode")
