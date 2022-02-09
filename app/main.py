@@ -127,8 +127,6 @@ def main():
 
         video_url = st.text_input("The URL link")
 
-        print(video_url)
-
         if video_url != '':
 
             ydl_opts = {}
@@ -246,6 +244,27 @@ def main():
 
     else:
         st.write("Image mode")
+
+        uploaded_file = st.file_uploader("Choose a image file", type="jpg")
+
+        if uploaded_file is not None:
+            # Convert the file to an opencv image.
+            file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+            opencv_image = cv2.imdecode(file_bytes, 1)
+
+            input_img = cv2.cvtColor(opencv_image, cv2.COLOR_BGR2RGB)
+            input_img = input_img.astype(np.float32)
+            input_img /= 255.
+
+            input_array = cv2.resize(input_img, (224, 224))
+            input_array = input_array.reshape(-1, 224, 224, 3)
+            prediction = model.predict(input_array)
+
+            confidence = np.amax(prediction)
+
+            st.image(opencv_image, channels="BGR")
+            st.write("The model says: {} (Confidence: {}%)".format(class_names[prediction.argmax()],
+                                                                   round(confidence * 100, 3)))
 
 
 if __name__ == "__main__":
